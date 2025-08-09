@@ -1,0 +1,20 @@
+{
+  "name": "chronorganizer-2.0", 
+  "version": "2.0.0", 
+  "description": "Application de gestion du temps et des tâches avec technique Pomodoro",
+  "main": "app.js",
+  "scripts": {
+    "start": "serve .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "pomodoro",
+    "productivity",
+    "todo"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "serve": "^14.2.3" 
+  }
+}

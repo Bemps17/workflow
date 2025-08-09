@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Chronorganizer 2.0</title>
+
+    <link rel="manifest" href="/manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    
+    <link rel="stylesheet" href="style.css">
+
+    <script>
+        tailwind.config = { darkMode: 'class', theme: { extend: { colors: { 'primary': 'var(--custom-primary)' } } } }
+    </script>
+</head>
+<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200 antialiased">
+
+    <div class="flex min-h-screen">
+        <aside id="sidebar" class="bg-white dark:bg-slate-800 w-72 p-6 shadow-lg fixed lg:static h-full z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
+            <button id="close-sidebar-btn" aria-label="Fermer le menu" class="absolute top-4 right-4 text-slate-500 hover:text-primary lg:hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+            <div id="sidebar-content" class="sidebar-content space-y-8">
+                <div class="sidebar-section">
+                    <h3 class="font-bold text-lg text-primary border-b border-primary/30 pb-2 mb-4">⚙️ Paramètres</h3>
+                    <button id="theme-toggle-btn" class="w-full flex items-center justify-center gap-2 rounded-lg px-4 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">
+                        <span id="theme-icon">🌙</span> <span class="font-semibold">Mode Sombre</span>
+                    </button>
+                    <div class="mt-4 space-y-2">
+                        <label for="work-duration" class="text-sm font-medium">Durée Travail (min)</label>
+                        <input type="number" id="work-duration" value="25" class="w-full p-2 rounded-md bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-primary">
+                        <label for="break-duration" class="text-sm font-medium">Durée Pause (min)</label>
+                        <input type="number" id="break-duration" value="5" class="w-full p-2 rounded-md bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-primary">
+                    </div>
+                </div>
+                <div class="sidebar-section">
+                    <h3 class="font-bold text-lg text-primary border-b border-primary/30 pb-2 mb-4">🔊 Notifications</h3>
+                    <div class="space-y-3">
+                         <label class="flex items-center gap-2"><input type="checkbox" id="sound-toggle" class="h-4 w-4 rounded text-primary focus:ring-primary" checked> Sons</label>
+                         <label class="flex items-center gap-2"><input type="checkbox" id="local-notif-toggle" class="h-4 w-4 rounded text-primary focus:ring-primary" checked> Notifications OS</label>
+                    </div>
+                </div>
+                <div id="rewards-sidebar-section" class="sidebar-section">
+                    <h3 class="font-bold text-lg text-primary border-b border-primary/30 pb-2 mb-4">🏆 Récompenses</h3>
+                    <ul class="reward-list space-y-2 text-sm"></ul>
+                    <div class="mt-4 flex gap-2">
+                        <input type="text" id="new-reward-input" placeholder="Nouvelle récompense" class="flex-grow p-2 rounded-md bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600">
+                        <button id="add-reward-btn" class="px-4 py-2 rounded-md bg-primary text-white font-bold hover:opacity-90">+</button>
+                    </div>
+                </div>
+                <div class="sidebar-section">
+                    <h3 class="font-bold text-lg text-primary border-b border-primary/30 pb-2 mb-4">🗃️ Données</h3>
+                    <button id="import-btn" class="w-full flex items-center justify-center gap-2 rounded-lg px-4 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors font-semibold">
+                        📥 Importer des tâches
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <main class="flex-grow p-4 sm:p-6 lg:p-8">
+            <header class="flex items-center justify-between mb-6">
+                <button id="hamburger-btn" aria-label="Ouvrir le menu" class="text-slate-600 dark:text-slate-400 lg:hidden">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+                </button>
+                <h1 id="project-title" class="text-2xl font-bold text-slate-800 dark:text-slate-100">Chronorganizer 2.0</h1>
+            </header>
+            
+            <div id="quote-display" class="p-4 rounded-lg text-center italic text-primary/80 dark:text-primary/60 bg-primary/10 dark:bg-primary/20 mb-6 shadow-sm"></div>
+
+            <div class="space-y-6">
+                <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-lg">
+                    <h2 class="text-xl font-bold mb-4">Tableau de Bord du Jour</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                        <div><h3 class="text-3xl font-bold text-slate-700 dark:text-slate-200" id="tasks-today">0</h3><p class="text-sm text-slate-500">Tâches terminées</p></div>
+                        <div><h3 class="text-3xl font-bold text-slate-700 dark:text-slate-200" id="pomodoros-today">0</h3><p class="text-sm text-slate-500">Sessions Pomodoro</p></div>
+                        <div><h3 class="text-3xl font-bold text-slate-700 dark:text-slate-200" id="total-tasks">0</h3><p class="text-sm text-slate-500">Total Tâches</p></div>
+                        <div><h3 class="text-3xl font-bold text-slate-700 dark:text-slate-200">🔥 <span id="streak-count">0</span></h3><p class="text-sm text-slate-500">Série</p></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 p-6 bg-white dark:bg-slate-800 rounded-xl shadow-lg">
+                        <h3 class="font-bold text-lg mb-2">Progression Globale</h3>
+                        <div class="mt-4 w-full bg-slate-200 dark:bg-slate-700 rounded-full h-4">
+                            <div id="progress-fill" class="bg-primary h-4 rounded-full transition-all duration-500 flex items-center justify-center text-xs font-bold text-white" style="width: 0%"></div>
+                        </div>
+                        <div class="text-center mt-2 text-sm text-slate-500"><span id="completed-tasks">0</span> / <span id="total-tasks-bis">0</span> tâches complétées (<span id="completion-rate">0%</span>)</div>
+                    </div>
+                    <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-lg flex flex-col items-center justify-center">
+    <h2 id="timer-mode" class="text-lg font-semibold text-slate-600 dark:text-slate-300">Session de Travail</h2>
+    <div id="timer-display" class="text-5xl font-bold text-primary my-2">25:00</div>
+    
+    <div id="pomodoro-cycle-display" class="text-2xl mb-3">⚪ ⚪ ⚪ ⚪</div>
+    
+    <div class="flex gap-3">
+        <button id="start-pause-timer-btn" class="px-4 py-2 rounded-lg bg-primary text-white font-semibold">▶️ Démarrer</button>
+        <button id="reset-timer-btn" class="px-4 py-2 rounded-lg bg-slate-200 dark:bg-slate-700 font-semibold hover:bg-slate-300 dark:hover:bg-slate-600">🔄</button>
+    </div>
+</div>
+                </div>
+
+                <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-lg"><canvas id="productivity-chart"></canvas></div>
+                
+                <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-lg">
+                    <h2 class="text-xl font-bold mb-4">Gestion des Tâches</h2>
+                    <div class="space-y-4 mb-6">
+                        <input type="text" id="new-task-input" placeholder="Ajouter une nouvelle tâche..." class="w-full p-3 rounded-lg bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-primary">
+                        <div class="priority-selector grid grid-cols-3 gap-2">
+                            <button class="priority-btn p-2 rounded-lg border-2 border-transparent bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 font-semibold data-[active=true]:border-red-500" data-priority="high">Haute</button>
+                            <button class="priority-btn p-2 rounded-lg border-2 border-transparent bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-400 font-semibold data-[active=true]:border-yellow-500" data-priority="medium" data-active="true">Moyenne</button>
+                            <button class="priority-btn p-2 rounded-lg border-2 border-transparent bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-400 font-semibold data-[active=true]:border-green-500" data-priority="low">Basse</button>
+                        </div>
+                        <button id="add-task-btn" class="w-full p-3 rounded-lg bg-primary text-white font-bold text-lg hover:opacity-90 transition-opacity">Ajouter la tâche</button>
+                    </div>
+                    <div class="flex items-center gap-4 my-6 border-t border-slate-200 dark:border-slate-700 pt-6">
+                        <label for="sort-tasks" class="font-semibold">Trier par:</label>
+                        <select id="sort-tasks" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600">
+                            <option value="priority">Priorité</option>
+                            <option value="date">Date</option>
+                        </select>
+                    </div>
+                    <ul id="task-list" class="space-y-3"></ul>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <button id="fab-add-task" class="fixed bottom-6 right-6 h-14 w-14 rounded-full bg-primary text-white shadow-lg flex items-center justify-center text-3xl font-light hover:scale-105 transition-transform">+</button>
+    <div id="aria-announce" class="sr-only" aria-live="polite"></div>
+    <div id="import-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-2xl p-6 w-full max-w-lg">
+            <h2 class="text-xl font-bold mb-4">Importer des Tâches</h2>
+            <p class="text-sm text-slate-500 mb-4">
+                Importez un fichier JSON ou CSV. Les tâches avec un `id` existant seront mises à jour, les autres seront ajoutées.
+            </p>
+            <input type="file" id="import-file-input" accept=".json,.csv" class="w-full p-2 border rounded-md border-slate-300 dark:border-slate-600 text-sm">
+            <div id="import-preview" class="mt-4 p-3 bg-slate-100 dark:bg-slate-700 rounded-md min-h-[50px] text-sm">
+                En attente d'un fichier...
+            </div>
+            <div class="flex gap-4 mt-6">
+                <button id="import-cancel-btn" class="w-full py-2 rounded-lg bg-slate-200 dark:bg-slate-600 font-bold">Annuler</button>
+                <button id="import-confirm-btn" class="w-full py-2 rounded-lg bg-primary text-white font-bold disabled:opacity-50" disabled>Confirmer l'Import</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js" type="module"></script>
+</body>
+</html>

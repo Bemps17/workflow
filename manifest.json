@@ -1,0 +1,226 @@
+{
+  "name": "Chronorganizer 2.0- Gestionnaire de Productivité",
+  "short_name": "Chronorganizer 2.0",
+  "description": "Application de gestion du temps et des tâches avec technique Pomodoro, gamification et analytics avancées",
+  "version": "2.0.0",
+  "manifest_version": 3,
+  
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#3b82f6",
+  "background_color": "#0f172a",
+  
+  "icons": [
+    {
+      "src": "/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop-home.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Page d'accueil - Vue Desktop"
+    },
+    {
+      "src": "/screenshots/desktop-tasks.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Gestion des tâches"
+    },
+    {
+      "src": "/screenshots/mobile-home.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Page d'accueil - Vue Mobile"
+    },
+    {
+      "src": "/screenshots/mobile-pomodoro.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Timer Pomodoro"
+    }
+  ],
+  
+  "categories": ["productivity", "utilities", "lifestyle"],
+  
+  "shortcuts": [
+    {
+      "name": "Nouvelle Tâche",
+      "short_name": "Tâche",
+      "description": "Créer une nouvelle tâche rapidement",
+      "url": "/?action=new-task",
+      "icons": [
+        {
+          "src": "/icons/shortcut-new-task.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Démarrer Pomodoro",
+      "short_name": "Pomodoro",
+      "description": "Lancer une session de travail",
+      "url": "/?action=start-pomodoro",
+      "icons": [
+        {
+          "src": "/icons/shortcut-pomodoro.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Statistiques",
+      "short_name": "Stats",
+      "description": "Voir vos statistiques de productivité",
+      "url": "/?view=stats",
+      "icons": [
+        {
+          "src": "/icons/shortcut-stats.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "file",
+          "accept": ["text/*", "application/json", ".csv"]
+        }
+      ]
+    }
+  },
+  
+  "protocol_handlers": [
+    {
+      "protocol": "web+chronorganizer",
+      "url": "/?task=%s"
+    }
+  ],
+  
+  "related_applications": [],
+  "prefer_related_applications": false,
+  
+  "features": {
+    "file_handlers": [
+      {
+        "action": "/import",
+        "accept": {
+          "text/csv": [".csv"],
+          "application/json": [".json"],
+          "text/plain": [".txt", ".md"]
+        }
+      }
+    ],
+    
+    "launch_handler": {
+      "client_mode": "navigate-existing"
+    },
+    
+    "handle_links": "preferred",
+    
+    "edge_side_panel": {
+      "preferred_width": 400
+    }
+  },
+  
+  "permissions": [
+    "notifications",
+    "storage",
+    "background-sync"
+  ],
+  
+  "optional_permissions": [
+    "geolocation",
+    "camera",
+    "microphone"
+  ],
+  
+  "display_override": [
+    "window-controls-overlay",
+    "minimal-ui",
+    "standalone",
+    "browser"
+  ],
+  
+  "lang": "fr-FR",
+  "dir": "ltr",
+  
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7"
+}
